@@ -16,5 +16,3 @@
 # Inherit from msm8952-common
 $(call inherit-product, device/motorola/msm8952-common/msm8952.mk)
 
-# Screen density
-PRODUCT_AAPT_PREF_CONFIG := xxhdpi
