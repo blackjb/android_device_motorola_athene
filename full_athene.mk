@@ -21,4 +21,4 @@ $(call inherit-product, device/motorola/athene/device.mk)
 PRODUCT_DEVICE := athene
 PRODUCT_NAME := full_athene
 
-$(call inherit-product-if-exists, vendor/motorola/athene/athene-vendor.mk)
+$(call inherit-product-if-exists, vendor/motorola/msm8952/athene/athene-vendor.mk)
