@@ -18,6 +18,7 @@ $(call inherit-product, device/motorola/athene/full_athene.mk)
 #$(call inherit-product, vendor/cm/config/nfc_enhanced.mk)
 
 # Boot animation
+TARGET_BOOTANIMATION_HALF_RES := true
 TARGET_SCREEN_WIDTH := 1080
 TARGET_SCREEN_HEIGHT := 1920
 
