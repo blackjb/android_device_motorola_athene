@@ -26,6 +26,7 @@
  */
 
 #include <stdlib.h>
+#include <cutils/properties.h>
 
 #include "vendor_init.h"
 #include "property_service.h"
