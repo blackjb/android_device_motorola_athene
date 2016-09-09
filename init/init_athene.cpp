@@ -27,20 +27,21 @@
 
 #include <stdlib.h>
 #include <cutils/properties.h>
+#include <unistd.h>
+#include <cstring>
+#include <string>
 
 #include "vendor_init.h"
 #include "property_service.h"
 #include "log.h"
 #include "util.h"
 
-#define ISMATCH(a,b)    (!strncmp(a,b,PROP_VALUE_MAX))
-
 /* Target-Specific Dalvik Heap & HWUI Configuration */
 void target_ram() {
-    char ram[PROP_VALUE_MAX];
-    property_get("ro.boot.ram", ram);
+    std::string ram;
+    ram = property_get("ro.boot.ram");
 
-    if (ISMATCH(ram, "2GB")) {
+    if (ram == "2GB") {
         property_set("dalvik.vm.heapstartsize", "16m");
         property_set("dalvik.vm.heapgrowthlimit", "192m");
         property_set("dalvik.vm.heapsize", "512m");
@@ -59,7 +60,7 @@ void target_ram() {
         property_set("ro.hwui.text_small_cache_height", "1024");
         property_set("ro.hwui.text_large_cache_width", "2048");
         property_set("ro.hwui.text_large_cache_height", "1024");
-    } else if (ISMATCH(ram, "3GB")) {
+    } else if (ram == "3GB") {
         property_set("dalvik.vm.heapstartsize", "8m");
         property_set("dalvik.vm.heapgrowthlimit", "265m");
         property_set("dalvik.vm.heapsize", "512m");
@@ -78,7 +79,7 @@ void target_ram() {
         property_set("ro.hwui.text_small_cache_height", "1024");
         property_set("ro.hwui.text_large_cache_width", "2048");
         property_set("ro.hwui.text_large_cache_height", "1024");
-    } else if (ISMATCH(ram, "4GB")) {
+    } else if (ram == "4GB") {
         property_set("dalvik.vm.heapstartsize", "8m");
         property_set("dalvik.vm.heapgrowthlimit", "256m");
         property_set("dalvik.vm.heapsize", "512m");
@@ -101,11 +102,16 @@ void target_ram() {
 }
 
 void num_sims() {
-    char dualsim[PROP_VALUE_MAX];
-    property_get("ro.boot.dualsim", dualsim);
-    property_set("ro.hw.dualsim", dualsim);
+    std::string dualsim;
+    dualsim = property_get("ro.boot.dualsim");
 
-    if (ISMATCH(dualsim, "true")) {
+    /* START FIXME: stop haxing */
+    char dualsim_char[PROP_VALUE_MAX];
+    std::strcpy(dualsim_char, dualsim.c_str());
+    property_set("ro.hw.dualsim", dualsim_char);
+    /* END FIXME: stop haxing */
+
+    if (dualsim == "true") {
         property_set("persist.radio.multisim.config", "dsds");
 	} else {
         property_set("persist.radio.multisim.config", "");    
@@ -114,21 +120,20 @@ void num_sims() {
 
 void vendor_load_properties()
 {
-    char device[PROP_VALUE_MAX];
-    char device_boot[PROP_VALUE_MAX];
+    std::string device;
+    std::string device_boot;
+    std::string platform;
+    std::string radio;
+    std::string sku;
     char devicename[PROP_VALUE_MAX];
-    char platform[PROP_VALUE_MAX];
-    char radio[PROP_VALUE_MAX];
-    char sku[PROP_VALUE_MAX];
-    int rc;
 
-    rc = property_get("ro.board.platform", platform);
-    if (!rc || !ISMATCH(platform, ANDROID_TARGET))
+    platform = property_get("ro.board.platform");
+    if (platform != ANDROID_TARGET)
     return;
 
-    property_get("ro.boot.device", device_boot);
-    property_get("ro.boot.radio", radio);
-    property_get("ro.boot.hardware.sku", sku);
+    device_boot = property_get("ro.boot.device");
+    radio = property_get("ro.boot.radio");
+    sku = property_get("ro.boot.hardware.sku");
 
     /* Common for all models */
     property_set("ro.build.product", "athene");
@@ -138,12 +143,21 @@ void vendor_load_properties()
     property_set("persist.radio.mot_ecc_enabled", "1");
     property_set("persist.radio.force_get_pref", "1");
     property_set("ro.telephony.default_network", "10,0");
-    property_set("ro.hw.device", device_boot);
-    property_set("ro.hw.radio", radio);
+
+    /* START FIXME: stop haxing */
+    char device_boot_char[PROP_VALUE_MAX];
+    std::strcpy(device_boot_char, device_boot.c_str());
+    property_set("ro.hw.device", device_boot_char);
+    
+    char radio_char[PROP_VALUE_MAX];
+    std::strcpy(radio_char, radio.c_str());
+    property_set("ro.hw.radio", radio_char);
+    /* END FIXME: stop haxing */
+    
     target_ram();
     num_sims();
 
-    if (ISMATCH(device_boot, "athene_13mp")) {
+    if (device_boot == "athene_13mp") {
         /* Moto G4 (XT162x) */
         property_set("ro.product.device", "athene");
         property_set("ro.build.description", "athene-user 6.0.1 MPJ24.139-23.4 4 release-keys");
@@ -157,7 +171,16 @@ void vendor_load_properties()
         property_set("ro.hw.fps", "true");
     }
 
-    property_get("ro.product.device", device);
-    strlcpy(devicename, device, sizeof(devicename));
-    INFO("Found sku id: %s setting build properties for %s device\n", sku, devicename);
+    /* START FIXME: stop haxing */
+    device = property_get("ro.product.device");
+    char device_char[PROP_VALUE_MAX];
+    std::strcpy(device_char, device.c_str());
+
+    char sku_char[PROP_VALUE_MAX];
+    std::strcpy(sku_char, sku.c_str());
+    
+    strlcpy(devicename, device_char, sizeof(devicename));
+    INFO("Found sku id: %s setting build properties for %s device\n", sku_char, devicename);
+    /* END FIXME: stop haxing */
+
 }
